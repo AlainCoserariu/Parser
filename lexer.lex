@@ -1,8 +1,9 @@
-/* Analyseur syntaxique pour un presque sous-ensemble du langage C (TPC) */
+/* Analyseur lexicale pour le langage TCP (presque sous-ensemble du langage C) */
 
 %{
 #include "tree.h"
 #include "parser.h"
+
 void yyerror(char* msg);
 int lineno;
 %}
@@ -11,14 +12,14 @@ int lineno;
 %x COM
 
 %%
-/* Key word for the language */
+/* Mots clefs du langage */
 if return IF;
 else return ELSE;
 return return RETURN;
 while return WHILE;
 void return VOID;
 
-/* Operators */
+/* Operateurs */
 && return AND;
 || return OR;
 ==|!= return EQ;
@@ -27,9 +28,13 @@ void return VOID;
 [*/%] return DIVSTAR;
 
 "int"|"char" return TYPE; 
+
 [_a-zA-Z][_a-zA-Z0-9]* return IDENT;
 [0-9]+ return NUM;
+
 [a-zA-Z] return CHARACTER;
+
+/* Caractères unique */
 ; return ';';
 , return ',';
 \{ return '{';
@@ -40,13 +45,20 @@ void return VOID;
 \! return '!';
 \[ return '[';
 \] return ']';
+
 \n lineno++;
+
+/* Ignore les commentaires mais compte quand même le nombre de lignes */
 "/*" BEGIN COM;
 <COM>. ;
 <COM>[\n\r] lineno++;
 <COM>"*/" BEGIN INITIAL;
 \/\/.*[\n\r] lineno++;
+
+/* Ignore les espaces ou tabulations en trop */
 [ \t]+ ;
+
+/* Cas par défaut */
 . return yytext[0];
 %%
 
