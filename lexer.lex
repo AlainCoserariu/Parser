@@ -1,5 +1,6 @@
+/* Lexer for the language TCP */
+
 %{
-// déclaration des variables
 #include "tree.h"
 #include "parser.h"
 void yyerror(char* msg);
@@ -10,17 +11,21 @@ int lineno;
 %x COM
 
 %%
+/* Key word for the language */
 if return IF;
 else return ELSE;
 return return RETURN;
 while return WHILE;
 void return VOID;
+
+/* Operators */
 && return AND;
 || return OR;
 ==|!= return EQ;
 <|>|<=|>= return ORDER;
 -|\+ return ADDSUB;
 [*/%] return DIVSTAR;
+
 "int"|"char" return TYPE; 
 [_a-zA-Z][_a-zA-Z0-9]* return IDENT;
 [0-9]+ return NUM;
