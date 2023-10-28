@@ -1,4 +1,4 @@
-/* Lexer for the language TCP */
+/* Analyseur syntaxique pour un presque sous-ensemble du langage C (TPC) */
 
 %{
 #include "tree.h"
