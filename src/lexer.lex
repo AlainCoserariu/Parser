@@ -1,30 +1,29 @@
 /* Analyseur lexicale pour le langage TCP (presque sous-ensemble du langage C) */
 
 %{
-#include "tree.h"
 #include "parser.h"
 
 void yyerror(char* msg);
-int lineno;
+int lineno = 1;
 %}
 
 %option nounput noinput noyywrap
 %x COM
 
 %%
-/* Mots clefs du langage */
+    /* Mots clefs du langage */
 if return IF;
 else return ELSE;
 return return RETURN;
 while return WHILE;
 void return VOID;
 
-/* Operateurs */
+    /* Operateurs */
 && return AND;
-|| return OR;
-==|!= return EQ;
-<|>|<=|>= return ORDER;
--|\+ return ADDSUB;
+"||" return OR;
+"=="|"!=" return EQ;
+"<"|">"|"<="|">=" return ORDER;
+[-+] return ADDSUB;
 [*/%] return DIVSTAR;
 
 "int"|"char" return TYPE; 
@@ -34,7 +33,7 @@ void return VOID;
 
 [a-zA-Z] return CHARACTER;
 
-/* Caractères unique */
+    /* Caractères unique */
 ; return ';';
 , return ',';
 \{ return '{';
@@ -46,23 +45,18 @@ void return VOID;
 \[ return '[';
 \] return ']';
 
-\n lineno++;
+[\n\r] lineno++;
 
-/* Ignore les commentaires mais compte quand même le nombre de lignes */
+    /* Ignore les commentaires mais compte quand même le nombre de lignes */
 "/*" BEGIN COM;
 <COM>. ;
 <COM>[\n\r] lineno++;
 <COM>"*/" BEGIN INITIAL;
 \/\/.*[\n\r] lineno++;
 
-/* Ignore les espaces ou tabulations en trop */
+    /* Ignore les espaces ou tabulations en trop */
 [ \t]+ ;
 
-/* Cas par défaut */
+    /* Cas par défaut */
 . return yytext[0];
 %%
-
-int main(void){
-    yylex();
-    return 0;
-}

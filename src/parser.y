@@ -1,6 +1,16 @@
+/* Analyseur syntaxique pour le langage TPC (presque sous-ensemble du langage C) */
+
 %{
+#include <stdio.h>
 
+#include "parser.h"
 
+int yylex();
+
+extern int lineno;
+void yyerror(char* msg) {
+    fprintf(stderr, "Erreur à la ligne %d : %s\n", lineno, msg);
+}
 
 %}
 
@@ -15,6 +25,7 @@ DeclVars:
 Declarateurs:
        Declarateurs ',' IDENT
     |  IDENT
+    |  TYPE IDENT '[' NUM ']'
     ;
 DeclFoncts:
        DeclFoncts DeclFonct
@@ -34,6 +45,7 @@ Parametres:
 ListTypVar:
        ListTypVar ',' TYPE IDENT
     |  TYPE IDENT
+    |  TYPE IDENT '[' ']'
     ;
 Corps: '{' DeclVars SuiteInstr '}'
     ;
@@ -80,7 +92,7 @@ F   :  ADDSUB F
     ;
 LValue:
        IDENT
-    | IDENT 
+    |  IDENT '[' Exp ']'
     ;
 Arguments:
        ListExp
@@ -92,4 +104,7 @@ ListExp:
     ;
 %%
 
+int main(int argc, char* argv[]) {
+    return !yyparse();
+}
 
