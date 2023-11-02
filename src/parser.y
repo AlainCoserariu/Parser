@@ -25,7 +25,7 @@ DeclVars:
 Declarateurs:
        Declarateurs ',' IDENT
     |  IDENT
-    |  TYPE IDENT '[' NUM ']'
+    |  IDENT '[' NUM ']'
     ;
 DeclFoncts:
        DeclFoncts DeclFonct
