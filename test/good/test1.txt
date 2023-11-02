@@ -1,1 +1,13 @@
 int variable;
+
+
+void fonction(int var) {
+    int tab[10];
+    int var;
+
+    tab[2+2] = tab[6];
+    var = 2;
+}
+
+
+

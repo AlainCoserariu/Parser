@@ -88,7 +88,7 @@ F   :  ADDSUB F
     |  NUM
     |  CHARACTER
     |  LValue
-    |  IDENT '(' Arguments  ')'
+    |  IDENT '(' Arguments ')'
     ;
 LValue:
        IDENT
