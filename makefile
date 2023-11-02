@@ -28,3 +28,4 @@ obj/parser.o : obj/parser.c
 clean :
 	rm -f obj/*
 	rm -f bin/*
+	rm -f test/resultat.log
