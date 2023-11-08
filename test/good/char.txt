@@ -1,0 +1,6 @@
+char first;
+
+char attribu(char first){
+    first = 'a';
+    return first;
+}

@@ -8,8 +8,9 @@
 int yylex();
 
 extern int lineno;
+extern int colno;
 void yyerror(char* msg) {
-    fprintf(stderr, "Erreur à la ligne %d : %s\n", lineno, msg);
+    fprintf(stderr, "Erreur à la ligne %d, colonne %d : %s\n", lineno, colno, msg);
 }
 
 %}
