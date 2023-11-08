@@ -7,6 +7,7 @@
 
 void yyerror(char* msg);
 int lineno = 1;
+int colno = 0;
 %}
 
 %option nounput noinput
@@ -14,51 +15,51 @@ int lineno = 1;
 
 %%
     /* Mots clefs du langage */
-if {return IF;};
-else {return ELSE;};
-return {return RETURN;};
-while {return WHILE;};
-void {return VOID;};
+if {colno += yyleng; return IF;};
+else {colno += yyleng; return ELSE;};
+return {colno += yyleng; return RETURN;};
+while {colno += yyleng; return WHILE;};
+void {colno += yyleng; return VOID;};
 
     /* Operateurs */
-&& {return AND;};
-"||" {return OR;};
-"=="|"!=" {return EQ;};
-"<"|">"|"<="|">=" {return ORDER;};
-[-+] {return ADDSUB;};
-[*/%] {return DIVSTAR;};
+&& {colno += yyleng; return AND;};
+"||" {colno += yyleng; return OR;};
+"=="|"!=" {colno += yyleng; return EQ;};
+"<"|">"|"<="|">=" {colno += yyleng; return ORDER;};
+[-+] {colno += yyleng; return ADDSUB;};
+[*/%] {colno += yyleng; return DIVSTAR;};
 
-"int"|"char" {return TYPE;}; 
+"int"|"char" {colno += yyleng; return TYPE;}; 
 
-[_a-zA-Z][_a-zA-Z0-9]* {return IDENT;};
-[0-9]+ {return NUM;};
+[_a-zA-Z][_a-zA-Z0-9]* {colno += yyleng; return IDENT;};
+[0-9]+ {colno += yyleng; return NUM;};
 
-[a-zA-Z] {return CHARACTER;};
+'[a-zA-Z]' {colno += yyleng; return CHARACTER;};
 
     /* Caractères unique */
-; {return ';';};
-, {return ',';};
-"{" {return '{';};
-"}" {return '}';};
-"(" {return '(';};
-")" {return ')';};
-"=" {return '=';};
-"!" {return '!';};
-"[" {return '[';};
-"]" {return ']';};
+; {colno += yyleng; return ';';};
+, {colno += yyleng; return ',';};
+"{" {colno += yyleng; return '{';};
+"}" {colno += yyleng; return '}';};
+"(" {colno += yyleng; return '(';};
+")" {colno += yyleng; return ')';};
+"=" {colno += yyleng; return '=';};
+"!" {colno += yyleng; return '!';};
+"[" {colno += yyleng; return '[';};
+"]" {colno += yyleng; return ']';};
 
     /* Compte le nombre de ligne */
-[\n\r] {lineno++;};
+[\n\r] {colno = 0; lineno++;};
 
     /* Ignore les commentaires et compte le nombre de ligne du commentaire */
 "/*" {BEGIN COM;};
 <COM>. {;};
-<COM>[\n\r] {lineno++;};
+<COM>[\n\r] {colno = 0; lineno++;};
 <COM>"*/" {BEGIN INITIAL;};
-\/\/.*[\n\r] {lineno++;};
+\/\/.*[\n\r] {colno = 0; lineno++;};
 
     /* Ignore les espaces ou tabulations en trop */
-[ \t]+ {;};
+[ \t]+ {colno += yyleng;};
 
     /* Cas par défaut */
 . {return yytext[0];};

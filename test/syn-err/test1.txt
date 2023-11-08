@@ -1,0 +1,6 @@
+int oui;
+int oui2 = 2;
+
+void main(void){
+    return;
+}

@@ -1,0 +1,12 @@
+char first;
+char second;
+
+int main(char f, char s){
+    if ((f < s) || (f == s)){
+        /* le test s'est bien réalisé !! +°|#^@{\#~`} */
+        // oui
+        return 1;
+    } else {
+        return 0;
+    }
+}
