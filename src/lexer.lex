@@ -7,7 +7,8 @@
 
 void yyerror(char* msg);
 int lineno = 1;
-int colno = 0;
+int colno_tmp = 1;
+int colno = 1;
 %}
 
 %option nounput noinput
@@ -22,44 +23,44 @@ while {colno += yyleng; return WHILE;};
 void {colno += yyleng; return VOID;};
 
     /* Operateurs */
-&& {colno += yyleng; return AND;};
-"||" {colno += yyleng; return OR;};
-"=="|"!=" {colno += yyleng; return EQ;};
-"<"|">"|"<="|">=" {colno += yyleng; return ORDER;};
-[-+] {colno += yyleng; return ADDSUB;};
-[*/%] {colno += yyleng; return DIVSTAR;};
+&& {colno_tmp = colno; colno += yyleng; return AND;};
+"||" {colno_tmp = colno; colno += yyleng; return OR;};
+"=="|"!=" {colno_tmp = colno; colno += yyleng; return EQ;};
+"<"|">"|"<="|">=" {colno_tmp = colno; colno += yyleng; return ORDER;};
+[-+] {colno_tmp = colno; colno += yyleng; return ADDSUB;};
+[*/%] {colno_tmp = colno; colno += yyleng; return DIVSTAR;};
 
-"int"|"char" {colno += yyleng; return TYPE;}; 
+"int"|"char" {colno_tmp = colno; colno += yyleng; return TYPE;}; 
 
-[_a-zA-Z][_a-zA-Z0-9]* {colno += yyleng; return IDENT;};
-[0-9]+ {colno += yyleng; return NUM;};
+[_a-zA-Z][_a-zA-Z0-9]* {colno_tmp = colno; colno += yyleng; return IDENT;};
+[0-9]+ {colno_tmp = colno; colno += yyleng; return NUM;};
 
-'[a-zA-Z]' {colno += yyleng; return CHARACTER;};
+'[a-zA-Z]' {colno_tmp = colno; colno += yyleng; return CHARACTER;};
 
     /* Caractères unique */
-; {colno += yyleng; return ';';};
-, {colno += yyleng; return ',';};
-"{" {colno += yyleng; return '{';};
-"}" {colno += yyleng; return '}';};
-"(" {colno += yyleng; return '(';};
-")" {colno += yyleng; return ')';};
-"=" {colno += yyleng; return '=';};
-"!" {colno += yyleng; return '!';};
-"[" {colno += yyleng; return '[';};
-"]" {colno += yyleng; return ']';};
+; {colno_tmp = colno; colno += yyleng; return ';';};
+, {colno_tmp = colno; colno += yyleng; return ',';};
+"{" {colno_tmp = colno; colno += yyleng; return '{';};
+"}" {colno_tmp = colno; colno += yyleng; return '}';};
+"(" {colno_tmp = colno; colno += yyleng; return '(';};
+")" {colno_tmp = colno; colno += yyleng; return ')';};
+"=" {colno_tmp = colno; colno += yyleng; return '=';};
+"!" {colno_tmp = colno; colno += yyleng; return '!';};
+"[" {colno_tmp = colno; colno += yyleng; return '[';};
+"]" {colno_tmp = colno; colno += yyleng; return ']';};
 
     /* Compte le nombre de ligne */
-[\n\r] {colno = 0; lineno++;};
+[\n\r] {colno_tmp = 1; colno = 1; lineno++;};
 
     /* Ignore les commentaires et compte le nombre de ligne du commentaire */
 "/*" {BEGIN COM;};
 <COM>. {;};
-<COM>[\n\r] {colno = 0; lineno++;};
+<COM>[\n\r] {colno_tmp = 1; colno = 1; lineno++;};
 <COM>"*/" {BEGIN INITIAL;};
-\/\/.*[\n\r] {colno = 0; lineno++;};
+\/\/.*[\n\r] {colno_tmp = 1; colno = 1; lineno++;};
 
     /* Ignore les espaces ou tabulations en trop */
-[ \t]+ {colno += yyleng;};
+[ \t]+ {colno_tmp = colno; colno += yyleng;};
 
     /* Cas par défaut */
 . {return yytext[0];};

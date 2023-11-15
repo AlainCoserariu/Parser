@@ -8,9 +8,9 @@
 int yylex();
 
 extern int lineno;
-extern int colno;
+extern int colno_tmp;
 void yyerror(char* msg) {
-    fprintf(stderr, "Erreur à la ligne %d, colonne %d : %s\n", lineno, colno, msg);
+    fprintf(stderr, "Erreur à la ligne %d, colonne %d : %s\n", lineno, colno_tmp, msg);
 }
 
 %}
@@ -25,8 +25,9 @@ DeclVars:
     ;
 Declarateurs:
        Declarateurs ',' IDENT
+    |  Declarateurs ',' IDENT '[' NUM ']'
     |  IDENT
-    |  IDENT '[' NUM ']'
+    | IDENT '[' NUM ']'
     ;
 DeclFoncts:
        DeclFoncts DeclFonct

@@ -1,0 +1,3 @@
+void main(void){
+    int tab_2[test];
+}

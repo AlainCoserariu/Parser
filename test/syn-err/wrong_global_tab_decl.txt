@@ -1,0 +1,5 @@
+int tab[test];
+
+void main(void){
+    
+}
