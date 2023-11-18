@@ -27,7 +27,7 @@ Declarateurs:
        Declarateurs ',' IDENT
     |  Declarateurs ',' IDENT '[' NUM ']'
     |  IDENT
-    | IDENT '[' NUM ']'
+    |  IDENT '[' NUM ']'
     ;
 DeclFoncts:
        DeclFoncts DeclFonct
@@ -46,8 +46,9 @@ Parametres:
     ;
 ListTypVar:
        ListTypVar ',' TYPE IDENT
-    |  TYPE IDENT
+    |  ListTypVar ',' TYPE IDENT '[' ']'
     |  TYPE IDENT '[' ']'
+    |  TYPE IDENT
     ;
 Corps: '{' DeclVars SuiteInstr '}'
     ;

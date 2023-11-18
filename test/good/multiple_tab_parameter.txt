@@ -1,0 +1,3 @@
+void test(int tab[], char f, char tab2[]) {
+    return ;
+}
