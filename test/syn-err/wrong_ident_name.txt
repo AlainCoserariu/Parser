@@ -1,0 +1,7 @@
+int var;
+
+int int[10];
+
+void main(void) {
+    return ;
+}

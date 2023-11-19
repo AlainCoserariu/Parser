@@ -2,4 +2,5 @@ char tab[20], tab1[30], tab3[5];
 
 void main(void) {
 int tab[10], tab2[10];
+days[5]=duration[(now+span)%12];
 }

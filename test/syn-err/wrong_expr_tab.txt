@@ -1,0 +1,8 @@
+char tab[10];
+
+void main(int tab[]) 
+{
+    tab[n = 10];
+    int decl;
+    decl = 2+2;
+}
