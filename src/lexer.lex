@@ -16,52 +16,52 @@ int colno = 1;
 
 %%
     /* Mots clefs du langage */
-if {colno += yyleng; return IF;};
-else {colno += yyleng; return ELSE;};
-return {colno += yyleng; return RETURN;};
-while {colno += yyleng; return WHILE;};
-void {colno += yyleng; return VOID;};
+if                      {colno += yyleng; return IF;};
+else                    {colno += yyleng; return ELSE;};
+return                  {colno += yyleng; return RETURN;};
+while                   {colno += yyleng; return WHILE;};
+void                    {colno += yyleng; return VOID;};
 
     /* Operateurs */
-&& {colno_tmp = colno; colno += yyleng; return AND;};
-"||" {colno_tmp = colno; colno += yyleng; return OR;};
-"=="|"!=" {colno_tmp = colno; colno += yyleng; return EQ;};
-"<"|">"|"<="|">=" {colno_tmp = colno; colno += yyleng; return ORDER;};
-[-+] {colno_tmp = colno; colno += yyleng; return ADDSUB;};
-[*/%] {colno_tmp = colno; colno += yyleng; return DIVSTAR;};
+&&                      {colno_tmp = colno; colno += yyleng; return AND;};
+"||"                    {colno_tmp = colno; colno += yyleng; return OR;};
+"=="|"!="               {colno_tmp = colno; colno += yyleng; return EQ;};
+"<"|">"|"<="|">="       {colno_tmp = colno; colno += yyleng; return ORDER;};
+[-+]                    {colno_tmp = colno; colno += yyleng; return ADDSUB;};
+[*/%]                   {colno_tmp = colno; colno += yyleng; return DIVSTAR;};
 
-"int"|"char" {colno_tmp = colno; colno += yyleng; return TYPE;}; 
+"int"|"char"            {colno_tmp = colno; colno += yyleng; return TYPE;}; 
 
-[_a-zA-Z][_a-zA-Z0-9]* {colno_tmp = colno; colno += yyleng; return IDENT;};
-[0-9]+ {colno_tmp = colno; colno += yyleng; return NUM;};
+[_a-zA-Z][_a-zA-Z0-9]*  {colno_tmp = colno; colno += yyleng; return IDENT;};
+[0-9]+                  {colno_tmp = colno; colno += yyleng; return NUM;};
 
-'[a-zA-Z]' {colno_tmp = colno; colno += yyleng; return CHARACTER;};
+\'[^\\]\'|\'\\[nt]\'    {colno_tmp = colno; colno += yyleng; return CHARACTER;};
 
     /* Caractères unique */
-; {colno_tmp = colno; colno += yyleng; return ';';};
-, {colno_tmp = colno; colno += yyleng; return ',';};
-"{" {colno_tmp = colno; colno += yyleng; return '{';};
-"}" {colno_tmp = colno; colno += yyleng; return '}';};
-"(" {colno_tmp = colno; colno += yyleng; return '(';};
-")" {colno_tmp = colno; colno += yyleng; return ')';};
-"=" {colno_tmp = colno; colno += yyleng; return '=';};
-"!" {colno_tmp = colno; colno += yyleng; return '!';};
-"[" {colno_tmp = colno; colno += yyleng; return '[';};
-"]" {colno_tmp = colno; colno += yyleng; return ']';};
+;                       {colno_tmp = colno; colno += yyleng; return ';';};
+,                       {colno_tmp = colno; colno += yyleng; return ',';};
+"{"                     {colno_tmp = colno; colno += yyleng; return '{';};
+"}"                     {colno_tmp = colno; colno += yyleng; return '}';};
+"("                     {colno_tmp = colno; colno += yyleng; return '(';};
+")"                     {colno_tmp = colno; colno += yyleng; return ')';};
+"="                     {colno_tmp = colno; colno += yyleng; return '=';};
+"!"                     {colno_tmp = colno; colno += yyleng; return '!';};
+"["                     {colno_tmp = colno; colno += yyleng; return '[';};
+"]"                     {colno_tmp = colno; colno += yyleng; return ']';};
 
     /* Compte le nombre de ligne */
-[\n\r] {colno_tmp = 1; colno = 1; lineno++;};
+[\n\r]                  {colno_tmp = 1; colno = 1; lineno++;};
 
     /* Ignore les commentaires et compte le nombre de ligne du commentaire */
-"/*" {BEGIN COM;};
-<COM>. {;};
-<COM>[\n\r] {colno_tmp = 1; colno = 1; lineno++;};
-<COM>"*/" {BEGIN INITIAL;};
-\/\/.*[\n\r] {colno_tmp = 1; colno = 1; lineno++;};
+"/*"                    {BEGIN COM;};
+<COM>.                  {;};
+<COM>[\n\r]             {colno_tmp = 1; colno = 1; lineno++;};
+<COM>"*/"               {BEGIN INITIAL;};
+\/\/.*[\n\r]            {colno_tmp = 1; colno = 1; lineno++;};
 
     /* Ignore les espaces ou tabulations en trop */
-[ \t]+ {colno_tmp = colno; colno += yyleng;};
+[ \t]+                  {colno_tmp = colno; colno += yyleng;};
 
     /* Cas par défaut */
-. {return yytext[0];};
+.                       {return yytext[0];};
 %%
