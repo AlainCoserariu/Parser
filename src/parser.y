@@ -15,7 +15,26 @@ void yyerror(char* msg) {
 
 %}
 
-%token TYPE IDENT VOID IF WHILE RETURN ELSE OR AND EQ ORDER ADDSUB DIVSTAR NUM CHARACTER
+%union {
+    char operator;
+    int num;
+    char ident[128];
+    char comp[3];
+    char logic_op[3];
+    char struct_control_op[10];
+    char type[10];
+    char character;
+}
+
+%token <type> TYPE VOID
+%token <ident> IDENT
+%token <comp> ORDER EQ
+%token <operator> ADDSUB DIVSTAR
+%token <num> NUM
+%token <character> CHARACTER
+%token <logic_op> OR AND
+%token <struct_control_op> IF WHILE RETURN ELSE
+
 %%
 Prog:  DeclVars DeclFoncts
     ;
