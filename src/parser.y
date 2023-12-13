@@ -3,19 +3,29 @@
 %{
 #include <stdio.h>
 
-#include "parser.h"
+#include "tree.h"
 
-int yylex();
+#include "parser.h"
 
 extern int lineno;
 extern int colno_tmp;
+
+// typedef struct {
+//     yylval;
+// }
+
+int yylex();
+
 void yyerror(char* msg) {
     fprintf(stderr, "Erreur à la ligne %d, colonne %d : %s\n", lineno, colno_tmp, msg);
 }
 
+
+
 %}
 
 %union {
+    Node* node;
     char operator;
     int num;
     char ident[128];
@@ -26,6 +36,9 @@ void yyerror(char* msg) {
     char character;
 }
 
+%type <node> Prog DeclVars Declarateurs DeclFoncts DeclFonct
+%type <node> EnTeteFonct Parametres ListTypVar Corps SuiteInstr
+%type <node> Instr Exp TB FB M E T F LValue Arguments ListExp
 %token <type> TYPE VOID
 %token <ident> IDENT
 %token <comp> ORDER EQ
@@ -35,7 +48,10 @@ void yyerror(char* msg) {
 %token <logic_op> OR AND
 %token <struct_control_op> IF WHILE RETURN ELSE
 
+%expect 1
 %%
+Init: Prog
+
 Prog:  DeclVars DeclFoncts
     ;
 DeclVars:
@@ -108,7 +124,7 @@ F   :  ADDSUB F
     |  '!' F
     |  '(' Exp ')'
     |  NUM
-    |  CHARACTER
+    |  CHARACTER         
     |  LValue
     |  IDENT '(' Arguments ')'
     ;

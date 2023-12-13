@@ -3,6 +3,7 @@
 %{
 #include <stdio.h>
 
+#include "tree.h"
 #include "parser.h"
 
 void yyerror(char* msg);
