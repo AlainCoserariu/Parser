@@ -98,7 +98,6 @@ void printTree(Node *node) {
 
   printf("%s : ", StringFromLabel[node->label]);
   
-  
   printf("\n");
   depth++;
   for (Node *child = node->firstChild; child != NULL; child = child->nextSibling) {

@@ -34,7 +34,7 @@ void yyerror(char* msg) {
     char struct_control_op[10];
     char type[10];
     char character;
-}
+} 
 
 %type <node> Prog DeclVars Declarateurs DeclFoncts DeclFonct
 %type <node> EnTeteFonct Parametres ListTypVar Corps SuiteInstr
@@ -50,19 +50,30 @@ void yyerror(char* msg) {
 
 %expect 1
 %%
-Init: Prog
 
-Prog:  DeclVars DeclFoncts
+Prog:  DeclVars DeclFoncts                      {$$ = makeNode(Prog, (union values) { .num = 0});
+                                                addChild($$, $1);
+                                                printTree($$);}
     ;
 DeclVars:
-       DeclVars TYPE Declarateurs ';'
-    |
+       DeclVars TYPE Declarateurs ';'           {$$ = $1;
+                                                addChild($$, makeNode(type, (union values)  { .string = $2 } ));
+                                                addChild(FIRSTCHILD($$), $3);
+                                                }
+    |                                           {$$ = makeNode(DeclVars, (union values)  {.num = 0} );}
     ;
 Declarateurs:
-       Declarateurs ',' IDENT
-    |  Declarateurs ',' IDENT '[' NUM ']'
-    |  IDENT
-    |  IDENT '[' NUM ']'
+       Declarateurs ',' IDENT                   {$$ = $1;
+                                                addChild($$, makeNode(ident, (union values) {.string = $3}));
+                                                }
+    |  Declarateurs ',' IDENT '[' NUM ']'       {$$ = $1;
+                                                addChild($$, makeNode(ident, (union values) {.string = $3}));
+                                                addChild($$, makeNode(num, (union values) {.num = $5}));
+                                                }
+    |  IDENT                                    {$$ = makeNode(ident, (union values) {.string = $1});}
+    |  IDENT '[' NUM ']'                        {$$ = makeNode(ident, (union values) {.string = $1});
+                                                addChild($$, makeNode(num, (union values) {.num = $3}));
+                                                }
     ;
 DeclFoncts:
        DeclFoncts DeclFonct
