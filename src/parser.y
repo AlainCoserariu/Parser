@@ -57,18 +57,20 @@ Prog:  DeclVars DeclFoncts                      {$$ = makeNode(Prog, (union valu
     ;
 DeclVars:
        DeclVars TYPE Declarateurs ';'           {$$ = $1;
-                                                addChild($$, makeNode(type, (union values)  { .string = $2 } ));
-                                                addChild(FIRSTCHILD($$), $3);
+                                                Node* i = makeNode(type, (union values)  { .string = $2 });
+                                                addChild($$, i );
+                                                addChild(i, $3);
                                                 }
     |                                           {$$ = makeNode(DeclVars, (union values)  {.num = 0} );}
     ;
 Declarateurs:
        Declarateurs ',' IDENT                   {$$ = $1;
-                                                addChild($$, makeNode(ident, (union values) {.string = $3}));
+                                                addSibling($$, makeNode(ident, (union values) {.string = $3}));
                                                 }
     |  Declarateurs ',' IDENT '[' NUM ']'       {$$ = $1;
-                                                addChild($$, makeNode(ident, (union values) {.string = $3}));
-                                                addChild($$, makeNode(num, (union values) {.num = $5}));
+                                                Node* i = makeNode(ident, (union values) {.string = $3});
+                                                addSibling($$, i);
+                                                addChild(i, makeNode(num, (union values) {.num = $5}));
                                                 }
     |  IDENT                                    {$$ = makeNode(ident, (union values) {.string = $1});}
     |  IDENT '[' NUM ']'                        {$$ = makeNode(ident, (union values) {.string = $1});

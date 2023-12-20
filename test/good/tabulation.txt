@@ -1,4 +1,4 @@
-int a0;
+int a0, a1;
 int a1;
 
 void chech(int a0, int a1){
