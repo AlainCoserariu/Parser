@@ -51,30 +51,31 @@ void yyerror(char* msg) {
 %expect 1
 %%
 
-Prog:  DeclVars DeclFoncts                      {$$ = makeNode(Prog, (union values) { .num = 0});
+Prog:  DeclVars DeclFoncts                      {$$ = makeNode(Prog, (union values) { .num = 0}, NONE_T);
                                                 addChild($$, $1);
+                                                addChild($$, $2);
                                                 printTree($$);}
     ;
 DeclVars:
        DeclVars TYPE Declarateurs ';'           {$$ = $1;
-                                                Node* i = makeNode(type, (union values)  { .string = $2 });
+                                                Node* i = makeNode(type, (union values)  { .string = $2 }, STRING_T);
                                                 addChild($$, i );
                                                 addChild(i, $3);
                                                 }
-    |                                           {$$ = makeNode(DeclVars, (union values)  {.num = 0} );}
+    |                                           {$$ = makeNode(DeclVars, (union values)  {.num = 0}, NONE_T);}
     ;
 Declarateurs:
        Declarateurs ',' IDENT                   {$$ = $1;
-                                                addSibling($$, makeNode(ident, (union values) {.string = $3}));
+                                                addSibling($$, makeNode(ident, (union values) {.string = $3}, STRING_T));
                                                 }
     |  Declarateurs ',' IDENT '[' NUM ']'       {$$ = $1;
-                                                Node* i = makeNode(ident, (union values) {.string = $3});
+                                                Node* i = makeNode(ident, (union values) {.string = $3}, STRING_T);
                                                 addSibling($$, i);
-                                                addChild(i, makeNode(num, (union values) {.num = $5}));
+                                                addChild(i, makeNode(num, (union values) {.num = $5}, INTEGER_T));
                                                 }
-    |  IDENT                                    {$$ = makeNode(ident, (union values) {.string = $1});}
-    |  IDENT '[' NUM ']'                        {$$ = makeNode(ident, (union values) {.string = $1});
-                                                addChild($$, makeNode(num, (union values) {.num = $3}));
+    |  IDENT                                    {$$ = makeNode(ident, (union values) {.string = $1}, STRING_T);}
+    |  IDENT '[' NUM ']'                        {$$ = makeNode(ident, (union values) {.string = $1}, STRING_T);
+                                                addChild($$, makeNode(num, (union values) {.num = $3}, INTEGER_T));
                                                 }
     ;
 DeclFoncts:

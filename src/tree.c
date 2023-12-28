@@ -1,6 +1,7 @@
 /* tree.c */
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include "tree.h"
 extern int lineno;       /* from lexer */
@@ -46,14 +47,27 @@ static const char *StringFromLabel[] = {
   /* To avoid listing them twice, see https://stackoverflow.com/a/10966395 */
 };
 
-Node *makeNode(label_t label, union values v) {
+Node *makeNode(label_t label, union values v, value_type t) {
   Node *node = malloc(sizeof(Node));
   if (!node) {
     printf("Run out of memory\n");
     exit(1);
   }
   node->label = label;
-  node->v = v;
+  node->type = t;
+  
+  if (t == STRING_T) {
+    node->v.string = (char*) malloc(sizeof(char) * (MAX_STRING_SIZE + 1));
+    if (!node->v.string) {
+      fprintf(stderr, "allocation impossible, fin du programme");
+      exit(2);
+    }
+
+    strcpy(node->v.string, v.string);
+  } else {
+    node->v = v;
+  }
+  
   node-> firstChild = node->nextSibling = NULL;
   node->lineno=lineno;
   return node;
@@ -96,7 +110,19 @@ void printTree(Node *node) {
     printf(rightmost[depth] ? "\u2514\u2500\u2500 " : "\u251c\u2500\u2500 ");
   }
 
-  printf("%s : ", StringFromLabel[node->label]);
+  if (node->type == NONE_T) {
+    printf("%s", StringFromLabel[node->label]);
+  } else {
+    printf("%s : ", StringFromLabel[node->label]);
+  }
+
+  if (node->type == INTEGER_T) {
+    printf("%d", node->v.num);
+  } else if (node->type == CHARACTER_T) {
+    printf("%c", node->v.chararcter);
+  } else if (node->type == STRING_T) {
+    printf("%s", node->v.string);
+  }
   
   printf("\n");
   depth++;

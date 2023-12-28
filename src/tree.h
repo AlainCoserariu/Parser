@@ -1,5 +1,7 @@
 /* tree.h */
 
+#define MAX_STRING_SIZE 128
+
 typedef enum {
   type,
   void_type,
@@ -47,15 +49,23 @@ union values {
     char* string;
 };
 
+typedef enum {
+    INTEGER_T,
+    CHARACTER_T,
+    STRING_T,
+    NONE_T
+} value_type;
+
 typedef struct Node {
   label_t label;
   union values v;
   struct Node *firstChild, *nextSibling;
+  value_type type;
   int lineno;
 } Node;
 
 
-Node *makeNode(label_t label, union values v);
+Node *makeNode(label_t label, union values v, value_type t);
 void addSibling(Node *node, Node *sibling);
 void addChild(Node *parent, Node *child);
 void deleteTree(Node*node);
