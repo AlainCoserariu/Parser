@@ -1,0 +1,20 @@
+int n1;
+int n2;
+int check;
+int main_function(int n1, int n2, int check) {
+    if (n1 < n2){
+        check = 0;
+        if ( n1 == 3 ) {
+            return 1;
+        } else {
+            while(n1 != n2) {
+                check = check + 1;
+                n1 = n1 + 1;
+            }
+        }
+    }
+    if (n1 > n2) {
+        return 2;
+    }
+    return 3;
+}
