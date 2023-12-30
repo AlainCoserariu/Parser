@@ -26,9 +26,10 @@ static const char *StringFromLabel[] = {
   "DeclVars",
   "Declarateurs",
   "DeclFoncts",
+  "DeclFonct",
   "EnTeteFonct",
   "Parametres",
-  "ListTypeVar",
+  "ListTypVar",
   "Corps",
   "SuiteInstr",
   "Instr",
@@ -119,7 +120,7 @@ void printTree(Node *node) {
   if (node->type == INTEGER_T) {
     printf("%d", node->v.num);
   } else if (node->type == CHARACTER_T) {
-    printf("%c", node->v.chararcter);
+    printf("%c", node->v.character);
   } else if (node->type == STRING_T) {
     printf("%s", node->v.string);
   }

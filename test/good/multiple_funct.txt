@@ -1,0 +1,18 @@
+int test;
+
+
+void function(char t, int t2, int tab[]) {
+    char t;
+    int a;
+    
+    t = '\n';
+    
+    return;
+}
+
+
+int main(int argc) {
+    int v;
+    v = function() / 2;
+    return 1 + 2 * 3 ;
+}

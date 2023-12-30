@@ -22,9 +22,10 @@ typedef enum {
   DeclVars,
   Declarateurs,
   DeclFoncts,
+  DeclFonct,
   EnTeteFonct,
   Parametres,
-  ListTypeVar,
+  ListTypVar,
   Corps,
   SuiteInstr,
   Instr,
@@ -44,7 +45,7 @@ typedef enum {
 } label_t;
 
 union values {
-    char chararcter;
+    char character;
     int num;
     char* string;
 };

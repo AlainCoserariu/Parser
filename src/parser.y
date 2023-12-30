@@ -54,7 +54,8 @@ void yyerror(char* msg) {
 Prog:  DeclVars DeclFoncts                      {$$ = makeNode(Prog, (union values) { .num = 0}, NONE_T);
                                                 addChild($$, $1);
                                                 addChild($$, $2);
-                                                printTree($$);}
+                                                printTree($$);
+                                                }
     ;
 DeclVars:
        DeclVars TYPE Declarateurs ';'           {$$ = $1;
@@ -79,80 +80,136 @@ Declarateurs:
                                                 }
     ;
 DeclFoncts:
-       DeclFoncts DeclFonct
-    |  DeclFonct
+       DeclFoncts DeclFonct                     {$$ = $1;
+                                                addSibling($$, $2);
+                                                }
+    |  DeclFonct                                {$$ = $1;
+                                                }
     ;
 DeclFonct:
-       EnTeteFonct Corps
+       EnTeteFonct Corps                        {$$ = makeNode(DeclFonct, (union values)  {.num = 0}, NONE_T);
+                                                addChild($$, $1);
+                                                addChild($$, $2);
+                                                }
     ;
 EnTeteFonct:
-       TYPE IDENT '(' Parametres ')'
-    |  VOID IDENT '(' Parametres ')'
+       TYPE IDENT '(' Parametres ')'            {$$ = makeNode(EnTeteFonct, (union values)  {.num = 0}, NONE_T);
+                                                addChild($$, makeNode(type, (union values)  { .string = $1 }, STRING_T));
+                                                addChild($$, makeNode(ident, (union values) {.string = $2}, STRING_T));
+                                                addChild($$, $4);
+                                                }
+    |  VOID IDENT '(' Parametres ')'            {$$ = makeNode(EnTeteFonct, (union values)  {.num = 0}, NONE_T);
+                                                addChild($$, makeNode(void_type, (union values)  { .string = $1 }, STRING_T));
+                                                addChild($$, makeNode(ident, (union values) {.string = $2}, STRING_T));
+                                                addChild($$, $4);
+                                                }
     ;
 Parametres:
-       VOID
-    |  ListTypVar
+       VOID                                     {$$ = makeNode(void_type, (union values)  { .string = $1 }, STRING_T);}
+    |  ListTypVar                               {$$ = $1;}
     ;
 ListTypVar:
-       ListTypVar ',' TYPE IDENT
-    |  ListTypVar ',' TYPE IDENT '[' ']'
-    |  TYPE IDENT '[' ']'
-    |  TYPE IDENT
+       ListTypVar ',' TYPE IDENT                {$$ = $1;
+                                                addSibling($$, makeNode(type, (union values) {.string = $3}, STRING_T));
+                                                addSibling($$, makeNode(ident, (union values) {.string = $4}, STRING_T));}
+    |  ListTypVar ',' TYPE IDENT '[' ']'        {$$ = $1;
+                                                addSibling($$, makeNode(type, (union values) {.string = $3}, STRING_T));
+                                                addSibling($$, makeNode(ident, (union values) {.string = $4}, STRING_T));
+                                                addSibling($$, makeNode(num, (union values) { .num = 0}, NONE_T));
+                                                }
+    |  TYPE IDENT '[' ']'                       {$$ = makeNode(type, (union values) {.string = $1}, STRING_T);
+                                                addSibling($$, makeNode(ident, (union values) {.string = $2}, STRING_T));
+                                                addSibling($$, makeNode(num, (union values) { .num = 0}, NONE_T));}
+    |  TYPE IDENT                               {$$ = makeNode(type, (union values) {.string = $1}, STRING_T);
+                                                addSibling($$, makeNode(ident, (union values) {.string = $2}, STRING_T));}
     ;
-Corps: '{' DeclVars SuiteInstr '}'
+Corps: '{' DeclVars SuiteInstr '}'              {$$ = makeNode(Corps, (union values) {.num = 0}, NONE_T);
+                                                addChild($$, $2);
+                                                addChild($$, $3);
+                                                }
     ;
 SuiteInstr:
-       SuiteInstr Instr
-    |
+       SuiteInstr Instr                         {$$ = $1;
+                                                addChild($$, $2);}
+    |                                           {$$ = makeNode(SuiteInstr, (union values) {.num = 0}, NONE_T);}
     ;
 Instr:
-       LValue '=' Exp ';'
-    |  IF '(' Exp ')' Instr
-    |  IF '(' Exp ')' Instr ELSE Instr
-    |  WHILE '(' Exp ')' Instr
-    |  IDENT '(' Arguments  ')' ';'
-    |  RETURN Exp ';'
-    |  RETURN ';'
-    |  '{' SuiteInstr '}'
-    |  ';'
+       LValue '=' Exp ';'                       {$$ = makeNode(Instr, (union values) {.num = 0}, NONE_T);
+                                                addSibling($$, makeNode(character, (union values) {.character = '='}, CHARACTER_T));
+                                                addSibling($$, $3);}
+    |  IF '(' Exp ')' Instr                     {$$ = makeNode(if_type, (union values) {.string = $1}, STRING_T);
+                                                addSibling($$, $3);
+                                                addSibling($$, $5);}
+    |  IF '(' Exp ')' Instr ELSE Instr          {$$ = makeNode(if_type, (union values) {.string = $1}, STRING_T);
+                                                addSibling($$, $3);
+                                                addSibling($$, $5);
+                                                addSibling($$, makeNode(else_type, (union values) {.string = $6}, STRING_T));
+                                                addSibling($$, $7);}
+    |  WHILE '(' Exp ')' Instr                  {$$ = makeNode(while_type, (union values) {.string = $1}, STRING_T);
+                                                addSibling($$, $3);
+                                                addSibling($$, $5);}
+    |  IDENT '(' Arguments  ')' ';'             {$$ = makeNode(ident, (union values) {.string = $1}, STRING_T);
+                                                addSibling($$, $3);}
+    |  RETURN Exp ';'                           {$$ = makeNode(return_type, (union values) {.string = $1}, STRING_T);
+                                                addSibling($$, $2);}
+    |  RETURN ';'                               {$$ = makeNode(return_type, (union values) {.string = $1}, STRING_T);}
+    |  '{' SuiteInstr '}'                       {$$ = $2;}
+    |  ';'                                      {;}
     ;
-Exp :  Exp OR TB
-    |  TB
+Exp :  Exp OR TB                                {$$ = makeNode(or, (union values) {.string = $2}, STRING_T);
+                                                addChild($$, $1);
+                                                addChild($$, $3);}
+    |  TB                                       {$$ = $1;}
     ;
-TB  :  TB AND FB
-    |  FB
+TB  :  TB AND FB                                {$$ = makeNode(and, (union values) {.string = $2}, STRING_T);
+                                                addChild($$, $1);
+                                                addChild($$, $3);}
+    |  FB                                       {$$ = $1;}
     ;
-FB  :  FB EQ M
-    |  M
+FB  :  FB EQ M                                  {$$ = makeNode(eq, (union values) {.string = $2}, STRING_T);
+                                                addChild($$, $1);
+                                                addChild($$, $3);}
+    |  M                                        {$$ = $1;}
     ;
-M   :  M ORDER E
-    |  E
+M   :  M ORDER E                                {$$ = makeNode(order, (union values) {.string = $2}, STRING_T);
+                                                addChild($$, $1);
+                                                addChild($$, $3);}
+    |  E                                        {$$ = $1;}
     ;
-E   :  E ADDSUB T
-    |  T
+E   :  E ADDSUB T                               {$$ = makeNode(addsub, (union values) {.character = $2}, CHARACTER_T);
+                                                addChild($$, $1);
+                                                addChild($$, $3);}
+    |  T                                        {$$ = $1;}
     ;    
-T   :  T DIVSTAR F 
-    |  F
+T   :  T DIVSTAR F                              {$$ = makeNode(divstar, (union values) {.character = $2}, CHARACTER_T);
+                                                addChild($$, $1);
+                                                addChild($$, $3);}
+    |  F                                        {$$ = $1;}
     ;
-F   :  ADDSUB F
-    |  '!' F
-    |  '(' Exp ')'
-    |  NUM
-    |  CHARACTER         
-    |  LValue
-    |  IDENT '(' Arguments ')'
+F   :  ADDSUB F                                 {$$ = makeNode(addsub, (union values) {.character = $1}, CHARACTER_T);
+                                                addChild($$, $2);}
+    |  '!' F                                    {$$ = makeNode(character, (union values) {.character = '!'}, CHARACTER_T);
+                                                addChild($$, $2);}
+    |  '(' Exp ')'                              {$$ = $2;}
+    |  NUM                                      {$$ = makeNode(num, (union values) {.num = $1}, INTEGER_T);}
+    |  CHARACTER                                {$$ = makeNode(character, (union values) {.num = $1}, CHARACTER_T);}
+    |  LValue                                   {$$ = $1;}
+    |  IDENT '(' Arguments ')'                  {$$ = makeNode(ident, (union values) {.string = $1}, STRING_T);
+                                                addChild($$, $3);}
     ;
 LValue:
-       IDENT
-    |  IDENT '[' Exp ']'
+       IDENT                                    {$$ = makeNode(ident, (union values) {.string = $1}, STRING_T);}
+    |  IDENT '[' Exp ']'                        {$$ = makeNode(ident, (union values) {.string = $1}, STRING_T);
+                                                addChild($$, $3);}
     ;
 Arguments:
-       ListExp
-    |
+       ListExp                                  {$$ = makeNode(Arguments, (union values) {.num = 0}, NONE_T);}
+    |                                           {;}
     ;
 ListExp:
-       ListExp ',' Exp
-    |  Exp
+       ListExp ',' Exp                          {$$ = $1;
+                                                addSibling($$, $3);}
+    |  Exp                                      {$$ = $1;}
     ;
 %%
 
