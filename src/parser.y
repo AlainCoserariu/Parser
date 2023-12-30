@@ -139,9 +139,9 @@ SuiteInstr:
     |                                           {$$ = makeNode(SuiteInstr, (union values) {.num = 0}, NONE_T);}
     ;
 Instr:
-       LValue '=' Exp ';'                       {$$ = makeNode(Instr, (union values) {.num = 0}, NONE_T);
-                                                addSibling($$, makeNode(character, (union values) {.character = '='}, CHARACTER_T));
-                                                addSibling($$, $3);}
+       LValue '=' Exp ';'                       {$$ =  makeNode(eq, (union values) {.character = '='}, CHARACTER_T);
+                                                addChild($$, $1);
+                                                addChild($$, $3);}
     |  IF '(' Exp ')' Instr                     {$$ = makeNode(if_type, (union values) {.string = $1}, STRING_T);
                                                 addSibling($$, $3);
                                                 addSibling($$, $5);}
