@@ -2,6 +2,7 @@
 
 %{
 #include <stdio.h>
+#include <string.h>
 
 #include "tree.h"
 
@@ -9,6 +10,8 @@
 
 extern int lineno;
 extern int colno_tmp;
+
+int display_tree = 0;
 
 // typedef struct {
 //     yylval;
@@ -54,7 +57,9 @@ void yyerror(char* msg) {
 Prog:  DeclVars DeclFoncts                      {$$ = makeNode(Prog, (union values) { .num = 0}, NONE_T);
                                                 addChild($$, $1);
                                                 addChild($$, $2);
-                                                printTree($$);
+                                                
+                                                if (display_tree)
+                                                    printTree($$);
                                                 }
     ;
 DeclVars:
@@ -213,7 +218,34 @@ ListExp:
     ;
 %%
 
+void help() {
+    printf("tpcas est un utilitaire qui permet de vérifier si un programme ");
+    printf("TCP est correctement formé. L'utilitaire renvoie 0 si aucune ");
+    printf("erreur syntaxique n'a été découverte et 1 inversement.\nEn cas ");
+    printf("d'erreur la ligne et le numéro de colonne de l'erreur sera ");
+    printf("afficher.\nIl est aussi possible d'afficher l'arbre syntaxique du");
+    printf(" programme a l'aide de l'option -t ou --tree\n");
+    printf("Exemple d'utilisation : \ntpcas < fichier.tpc\n");
+    printf("tpcas -t < fichier.tpc");
+    printf("tpcas --tree < fichier.tpc");
+}
+
 int main(int argc, char* argv[]) {
+    if (argc > 2) {
+        fprintf(stderr, "Mauvais nombre de paramètre.\n");
+        fprintf(stderr, "Un seul paramètre possible parmis : -h --help -t --tree\n");
+        return 2;
+    } else if (argc == 2 && (strcmp(argv[1], "-t") == 0 || strcmp(argv[1], "--tree") == 0)) {
+        display_tree = 1;
+    } else if (argc == 2 && (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)) {
+        help();
+        return 0;
+    } else if (argc == 2) {
+        fprintf(stderr, "Paramètre inconnu\n");
+        fprintf(stderr, "Un seul paramètre possible parmis : -h --help -t --tree\n");
+        return 2;
+    }
+
     return yyparse();
 }
 
